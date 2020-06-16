@@ -38,6 +38,14 @@ describe('auction routes', () => {
       end: '2020-07-19'
     });
 
+    await Bid.create({
+      auction: auction._id,
+      user: user._id,
+      price: 100.00,
+      quantity: 1,
+      accepted: false
+    });
+
     return request(app)
       .post('/api/v1/bids')
       .auth('cheese@cheesy.com', 'hotcheesesammy')
@@ -61,5 +69,47 @@ describe('auction routes', () => {
       });
   });
 
+  it('gets bid details by id with GET', async() => {
+    const user = await User.create({
+      email: 'cheese@cheesy.com',
+      password: 'hotcheesesammy'
+    });
+
+    const auction = await Auction.create({
+      user: user._id,
+      title: 'Guitar for sale',
+      description: 'Gibson electric guitar',
+      quantity: '1',
+      end: '2020-07-19'
+    });
+
+    const bid = await Bid.create({
+      auction: auction._id,
+      user: user._id,
+      price: 100.00,
+      quantity: 1,
+      accepted: false
+    });
+
+    return request(app)
+      .get(`/api/v1/bids/${bid._id}`)
+      .auth('cheese@cheesy.com', 'hotcheesesammy')
+      .then(res => {
+        expect(res.body).toEqual({
+          _id: expect.anything(),
+          auction: {
+            _id: auction.id,
+            title: auction.title,
+            description: auction.description,
+          },
+          user: {
+            _id: user.id,
+            email: user.email
+          },
+          price: 100.00,
+          quantity: 1
+        });
+      });
+  });
 
 });

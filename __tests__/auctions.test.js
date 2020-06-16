@@ -131,6 +131,4 @@ describe('auction routes', () => {
         }]);
       });
   });
-
-
 });
