@@ -7,6 +7,7 @@ const request = require('supertest');
 const app = require('../lib/app');
 const User = require('../lib/models/User');
 const Auction = require('../lib/models/Auction');
+const Bid = require('../lib/models/Bid');
 
 describe('auction routes', () => {
   beforeAll(async() => {
@@ -66,6 +67,16 @@ describe('auction routes', () => {
       end: '2020-07-19'
     });
 
+    await Bid.create([
+      {
+        auction: auction._id,
+        user: user._id,
+        price: 100.00,
+        quantity: 1,
+        accepted: false
+      }
+    ]);
+
     return request(app)
       .get(`/api/v1/auctions/${auction._id}`)
       .then(res => {
@@ -76,7 +87,18 @@ describe('auction routes', () => {
           description: 'Gibson electric guitar',
           quantity: '1',
           end: '2020-07-19T00:00:00.000Z',
-          __v: 0
+          __v: 0,
+          bids: [
+            {
+              _id: expect.anything(),
+              auction: auction.id,
+              user: user.id,
+              price: 100.00,
+              quantity: 1,
+              accepted: false,
+              __v: 0
+            }
+          ]
         });
       });
   });
