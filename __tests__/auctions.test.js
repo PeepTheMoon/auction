@@ -52,5 +52,35 @@ describe('auction routes', () => {
       });
   });
 
+  it('gets auction details by id with GET', async() => {
+    const user = await User.create({
+      email: 'cheese@cheesy.com',
+      password: 'hotcheesesammy'
+    });
+
+    const auction = await Auction.create({
+      user: user._id,
+      title: 'Guitar for sale',
+      description: 'Gibson electric guitar',
+      quantity: '1',
+      end: '2020-07-19'
+    });
+
+    return request(app)
+      .get(`/api/v1/auctions/${auction._id}`)
+      .then(res => {
+        expect(res.body).toEqual({
+          _id: expect.anything(),
+          user: user.id,
+          title: 'Guitar for sale',
+          description: 'Gibson electric guitar',
+          quantity: '1',
+          end: '2020-07-19T00:00:00.000Z',
+          __v: 0
+        });
+      });
+
+  });
+
 
 });
